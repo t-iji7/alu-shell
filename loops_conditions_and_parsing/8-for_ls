@@ -1,0 +1,5 @@
+#!/bin/bash
+for _ in *
+do
+    find "$_" | cut -d'-' -f2
+done

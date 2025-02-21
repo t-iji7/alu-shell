@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+n=0
+while [ "$n" -lt 13 ]
+do
+    echo "Hour: $n"
+    n2=1
+    while [ "$n2" -lt 60 ]
+    do
+	echo "$n2"
+	((n2++))
+    done
+    ((n+=1))
+done
