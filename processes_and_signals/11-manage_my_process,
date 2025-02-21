@@ -1,43 +1,31 @@
 #!/usr/bin/env bash
-# manages ./manage_my_process.
-#!/bin/bash
+# Start/Stops/Restarts. Script to be used with manage_my_process
 
-PID_FILE="/var/run/my_process.pid"
-MANAGE_SCRIPT="./manage_my_process"
+argv1=$1
+tmpfile="/var/run/my_process.pid"
 
-# Creates a job in bg and PID is retireved from $! variable.
-start_process() {
-    sudo $MANAGE_SCRIPT &
-    sudo sh -c "echo '$!' > $PID_FILE"
-    echo "manage_my_process started"
+startLoop_n_createFile()
+{
+    ./manage_my_process &
+    echo "$!" > "$tmpfile"
 }
-
-stop_process() {
-    sudo kill "$(cat "$PID_FILE")"
-    sudo rm -f "$PID_FILE"
-    echo "manage_my_process stopped"
+killLoop_n_rmFile()
+{
+    #kill "$(cat "$tmpfile")"
+    sudo pkill -f "./manage_my_process"
+    rm "$tmpfile"
 }
-
-restart_process() {
-    sudo kill "$(cat "$PID_FILE")"
-    sudo rm -f "$PID_FILE"
-    sudo $MANAGE_SCRIPT &
-    sudo sh -c "echo '$!' > $PID_FILE"
-    echo "manage_my_process restarted"
-}
-
-case $1 in
-    start)
-        start_process
-        ;;
-    stop)
-        stop_process
-        ;;
-    restart)
-        restart_process
-        ;;
-    *)
-        echo "Usage: $0 {start|stop|restart}"
-        exit 1
-        ;;
+case "$argv1" in
+    start) echo "manage_my_process started"
+	startLoop_n_createFile
+	;;
+    stop) echo "manage_my_process stopped"
+	killLoop_n_rmFile
+	;;
+    restart) echo "manage_my_process restarted"
+	killLoop_n_rmFile
+	startLoop_n_createFile
+	;;
+    *) echo "Usage: manage_my_process {start|stop|restart}"
+	;;
 esac
